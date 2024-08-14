@@ -20,10 +20,10 @@ namespace BookApp.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var applicationDbContext = _context.books.Include(b => b.Category);
-            return View(await applicationDbContext.ToListAsync());
+            List<Book> booksObj = _context.books.ToList();
+            return View(booksObj);
         }
 
         // GET: Books/Details/5
@@ -48,7 +48,7 @@ namespace BookApp.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Id");
+            ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Name");
             return View();
         }
 
@@ -57,16 +57,14 @@ namespace BookApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId,Name,Description,Auther,Date,Rate,ImageURL,CategoryId")] Book book)
+        public IActionResult Create(Book book)
         {
-            if (ModelState.IsValid)
-            {
                 _context.Add(book);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+                _context.SaveChangesAsync();
             ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Id", book.CategoryId);
-            return View(book);
+            return RedirectToAction(nameof(Index));
+           
+            
         }
 
         // GET: Books/Edit/5
