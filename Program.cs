@@ -1,3 +1,6 @@
+using BookApp.DbContextManagar;
+using Microsoft.EntityFrameworkCore;
+
 namespace BookApp
 {
     public class Program
@@ -8,6 +11,11 @@ namespace BookApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(
+                Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
+
 
             var app = builder.Build();
 
