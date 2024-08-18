@@ -5,57 +5,53 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container my-4">
+    <h1 class="mb-4">Book Details</h1>
 
-<div>
-    <h4>Book</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Auther)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Auther)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageURL)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Id)
-        </dd>
-    </dl>
+    <!-- Book Details Card -->
+    <div class="card">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <!-- Book Image -->
+                <img src="@Model.ImageURL" class="img-fluid rounded-start" alt="Book Image">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Name</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Author: @Model.Auther</h6>
+                    <p class="card-text">@Model.Description</p>
+                    <p class="card-text"><small class="text-muted">Published on: @Model.Date.ToString("MMMM dd, yyyy")</small></p>
+
+                    <!-- Rating -->
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">Rating:</span>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Model.Rate)
+                            {
+                                <i class="bi bi-star-fill text-warning"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-star text-muted"></i>
+                            }
+                        }
+                    </div>
+
+                    <!-- Category -->
+                    <p class="card-text mt-2"><strong>Category:</strong> @Model.Category.Name</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.BookId" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-success">Back to List</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.BookId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" />
+}
