@@ -81,6 +81,9 @@
         <div class="bg-light py-4 text-center" id="page-banner">
             <h1 class="display-4">Book's</h1>
         </div>
+        <div class="my-3">
+            <a href="@Url.Action("ReadLater")" class="btn btn-secondary">View Read Later List</a>
+        </div>
     </header>
     <!-- Header End -->
 
@@ -118,7 +121,7 @@
                             <!-- Action Buttons -->
                             <div class="d-flex w-90 justify-content-between mt-3">
                                 <a asp-action="Details" asp-route-id="@item.BookId" class="btn btn-info btn-sm me-2">Details</a>
-                                <a asp-action="" asp-route-id="@item.BookId" class="btn btn-primary btn-sm me-2">Read Later</a>
+                                <a asp-action="AddToReadLater" asp-route-id="@item.BookId" class="btn btn-primary btn-sm me-2">Read Later</a>
                                 <a asp-action="Delete" asp-route-id="@item.BookId" class="btn btn-danger btn-sm me-2">Delete</a>
                                 <a asp-action="Edit" asp-route-id="@item.BookId" class="btn btn-warning btn-sm me-2">Edit</a>
                             </div>

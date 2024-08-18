@@ -139,8 +139,9 @@ namespace BookApp.Controllers
             return View(book);
         }
 
-        // POST: Books/Delete/5
-        [HttpPost, ActionName("Delete")]
+
+    // POST: Books/Delete/5
+    [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -150,6 +151,32 @@ namespace BookApp.Controllers
                 _context.books.Remove(book);
             }
 
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Books/ReadLater
+        public IActionResult ReadLater()
+        {
+            var booksInReadLater = _context.toRead
+                .Include(r => r.Books)
+                .Select(r => r.Books)
+                .ToList();
+            return View(booksInReadLater);
+        }
+
+        // POST: Books/AddToReadLater/5
+        [HttpPost]
+        public async Task<IActionResult> AddToReadLater(int id)
+        {
+            if (await _context.toRead.AnyAsync(r => r.BookId == id))
+            {
+                // Book already in Read Later list
+                return RedirectToAction(nameof(Index));
+            }
+
+            var readLater = new ToRead { BookId = id };
+            _context.toRead.Add(readLater);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
