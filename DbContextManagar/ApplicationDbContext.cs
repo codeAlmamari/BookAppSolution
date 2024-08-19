@@ -28,9 +28,6 @@ namespace BookApp.DbContextManagar
                 .IsRequired(true)
                 .HasMaxLength(70);
 
-
-            
-
         }
 
         public DbSet<Book> books { get; set; }
