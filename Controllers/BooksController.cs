@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookApp.DbContextManagar;
 using BookApp.Models;
+using BookApp.Helper;
+using BookApp.ViewModel;
 
 namespace BookApp.Controllers
 {
     public class BooksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BooksController(ApplicationDbContext context)
+        public BooksController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Books
@@ -48,23 +52,65 @@ namespace BookApp.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Name");
+            // Fetch categories from the database
+            var categories = _context.categorys.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList();
+
+            // Check if categories are available
+            if (categories == null || !categories.Any())
+            {
+                ModelState.AddModelError(string.Empty, "No categories available. Please add a category first.");
+                return View();
+            }
+
+            // Pass categories to the view
+            ViewBag.CategoryId = new SelectList(categories, "Value", "Text");
+
             return View();
         }
 
-        // POST: Books/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Book book)
+        public async Task<IActionResult> Create(BookViewModel model)
         {
-            _context.Add(book);
-            _context.SaveChangesAsync();
-            ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Name", book.CategoryId);
-            return RedirectToAction(nameof(Index));
-           
-            
+            if (ModelState.IsValid)
+            {
+                // Save the image to wwwroot/Images
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(model.Image.FileName);
+                string extension = Path.GetExtension(model.Image.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await model.Image.CopyToAsync(fileStream);
+                }
+
+                // Save the URL to the database
+                string imageUrl = "/Images/" + fileName;
+
+                var book = new Book
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Auther = model.Auther,
+                    Date = DateOnly.FromDateTime(model.Date),
+                    Rate = model.Rate,
+                    ImageURL = imageUrl,
+                    CategoryId = model.CategoryId
+                };
+
+                _context.Add(book);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["CategoryId"] = new SelectList(_context.categorys, "Id", "Name", model.CategoryId);
+            return View(model);
         }
 
         // GET: Books/Edit/5

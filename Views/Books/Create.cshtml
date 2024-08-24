@@ -1,17 +1,17 @@
-﻿@model BookApp.Models.Book
+﻿@model BookApp.ViewModel.BookViewModel
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
 <div class="container my-5">
     <h1 class="mb-4">Create New Book</h1>
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form asp-action="Create">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <!-- Added enctype here -->
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="card shadow-sm">
@@ -49,9 +49,9 @@
                         </div>
 
                         <div class="form-group mt-3">
-                            <label asp-for="ImageURL" class="form-label"></label>
-                            <input asp-for="ImageURL" class="form-control" placeholder="Enter image URL" />
-                            <span asp-validation-for="ImageURL" class="text-danger"></span>
+                            <label asp-for="Image" class="form-label"></label>
+                            <input asp-for="Image" class="form-control" type="file" />
+                            <span asp-validation-for="Image" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mt-3">
@@ -73,8 +73,11 @@
                 </div>
             </form>
         </div>
-<div />
+    </div>
+</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
